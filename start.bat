@@ -1,3 +1,0 @@
-@echo off
-echo Starting IremboCare+ Application...
-node src/app.js 
