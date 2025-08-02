@@ -2,18 +2,54 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
+require('dotenv').config(); // Load environment variables
+
+// Import new services and utilities
+const weatherService = require('./api/weatherService');
+const newsService = require('./api/newsService');
+const logger = require('./utils/logger');
+const { asyncHandler, errorHandler } = require('./middleware/errorHandler');
+
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Enhanced logging
+logger.info('🏥 IremboCare+ server starting...', {
+  port: PORT,
+  nodeEnv: process.env.NODE_ENV,
+  timestamp: new Date().toISOString()
+});
 
 // Serve static files from pages directory
 app.use(express.static(path.join(__dirname, 'pages')));
 
-// Serve specific static files from public directory
-app.use('/styles.css', express.static(path.join(__dirname, 'public', 'styles.css')));
-app.use('/main.js', express.static(path.join(__dirname, 'public', 'main.js')));
-app.use('/index.js', express.static(path.join(__dirname, 'public', 'index.js')));
+// Serve static files from styles directory
+app.use('/styles', express.static(path.join(__dirname, 'styles')));
+
+// Serve specific CSS file
+app.use('/styles.css', express.static(path.join(__dirname, 'styles', 'main.css')));
 
 app.use(express.json());
+
+// Enhanced request logging middleware
+app.use((req, res, next) => {
+  const startTime = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - startTime;
+    logger.info('Request completed', {
+      method: req.method,
+      url: req.url,
+      statusCode: res.statusCode,
+      duration: `${duration}ms`,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip
+    });
+  });
+  
+  next();
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -369,14 +405,7 @@ app.get('/api/first-aid', (req, res) => {
 });
 
 // Enhanced error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Application Error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error', 
-    message: 'Something went wrong. Please try again later.',
-    timestamp: new Date().toISOString()
-  });
-});
+app.use(errorHandler);
 
 // Input validation middleware
 const validateAIDoctorInput = (req, res, next) => {
@@ -871,9 +900,358 @@ app.post('/api/telemedicine-request', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🏥 IremboCare+ server running on port ${PORT}`);
-  console.log(`📱 Access your app at: http://localhost:${PORT}`);
-  console.log(`🔐 Authentication endpoints ready`);
-  console.log(`🩺 Health services API ready`);
+// NEW API ENDPOINTS - Weather-based Health Recommendations
+app.get('/api/weather-health-tips', asyncHandler(async (req, res) => {
+  try {
+    const { location = 'Kigali' } = req.query;
+    
+    logger.info(`Weather health tips requested for ${location}`);
+    
+    const weatherHealthData = await weatherService.getWeatherHealthTips(location);
+    
+    res.json({
+      success: true,
+      data: weatherHealthData.data,
+      location,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Weather health tips error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Unable to fetch weather-based health recommendations',
+      message: 'Weather service is temporarily unavailable. Please try again later.'
+    });
+  }
+}));
+
+// NEW API ENDPOINTS - Health News
+app.get('/api/health-news', asyncHandler(async (req, res) => {
+  try {
+    const {
+      country = 'rw',
+      category = 'health',
+      pageSize = 10,
+      language = 'en'
+    } = req.query;
+    
+    logger.info(`Health news requested`, { country, category, pageSize });
+    
+    const newsData = await newsService.getHealthNews({
+      country,
+      category,
+      pageSize: parseInt(pageSize),
+      language
+    });
+    
+    res.json(newsData);
+  } catch (error) {
+    logger.error('Health news error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Unable to fetch health news',
+      message: 'News service is temporarily unavailable. Please try again later.'
+    });
+  }
+}));
+
+// NEW API ENDPOINTS - Health News by Category
+app.get('/api/health-news/category/:category', asyncHandler(async (req, res) => {
+  try {
+    const { category } = req.params;
+    const { pageSize = 10, language = 'en' } = req.query;
+    
+    logger.info(`Health news by category requested: ${category}`);
+    
+    const newsData = await newsService.getHealthNewsByCategory(category, {
+      pageSize: parseInt(pageSize),
+      language
+    });
+    
+    res.json(newsData);
+  } catch (error) {
+    logger.error(`Health news category error for ${req.params.category}:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Unable to fetch health news by category',
+      message: 'News service is temporarily unavailable. Please try again later.'
+    });
+  }
+}));
+
+// NEW API ENDPOINTS - Trending Health Topics
+app.get('/api/health-news/trending', asyncHandler(async (req, res) => {
+  try {
+    logger.info('Trending health topics requested');
+    
+    const trendingData = await newsService.getTrendingHealthTopics();
+    
+    res.json(trendingData);
+  } catch (error) {
+    logger.error('Trending health topics error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Unable to fetch trending health topics',
+      message: 'News service is temporarily unavailable. Please try again later.'
+    });
+  }
+}));
+
+// ENHANCED API ENDPOINTS - Enhanced Health Services with Search and Filter
+app.get('/api/health-services/search', asyncHandler(async (req, res) => {
+  try {
+    const {
+      location,
+      specialty,
+      services,
+      telemedicine,
+      type,
+      sort = 'name'
+    } = req.query;
+    
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing parameter',
+        message: 'Location parameter is required'
+      });
+    }
+    
+    logger.info(`Enhanced health services search`, {
+      location, specialty, services, telemedicine, type, sort
+    });
+    
+    const hospitals = hospitalsByDistrict[location] || [];
+    
+    let filteredHospitals = hospitals.filter(hospital => {
+      let matches = true;
+      
+      if (specialty && !hospital.specialties.some(s =>
+        s.toLowerCase().includes(specialty.toLowerCase()))) {
+        matches = false;
+      }
+      
+      if (services && !hospital.specialties.some(s =>
+        s.toLowerCase().includes(services.toLowerCase()))) {
+        matches = false;
+      }
+      
+      if (telemedicine !== undefined &&
+          hospital.telemedicine !== (telemedicine === 'true')) {
+        matches = false;
+      }
+      
+      if (type && hospital.type.toLowerCase() !== type.toLowerCase()) {
+        matches = false;
+      }
+      
+      return matches;
+    });
+    
+    // Sort results
+    if (sort === 'name') {
+      filteredHospitals.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === 'type') {
+      filteredHospitals.sort((a, b) => a.type.localeCompare(b.type));
+    }
+    
+    const formattedHospitals = filteredHospitals.map(h => ({
+      display_name: `${h.name} (${h.type})`,
+      name: h.name,
+      type: h.type,
+      phone: h.phone,
+      email: h.email,
+      telemedicine: h.telemedicine,
+      specialties: h.specialties,
+      id: h.name.toLowerCase().replace(/\s+/g, '-')
+    }));
+    
+    res.json({
+      success: true,
+      data: formattedHospitals,
+      location,
+      filters: { specialty, services, telemedicine, type, sort },
+      count: formattedHospitals.length
+    });
+    
+  } catch (error) {
+    logger.error('Enhanced health services search error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Unable to search health services. Please try again later.'
+    });
+  }
+}));
+
+// ENHANCED API ENDPOINTS - Enhanced Medication Search
+app.get('/api/medication/search', asyncHandler(async (req, res) => {
+  try {
+    const {
+      disease,
+      symptoms,
+      type = 'all',
+      limit = 10,
+      sort = 'relevance'
+    } = req.query;
+    
+    logger.info(`Enhanced medication search`, { disease, symptoms, type, limit, sort });
+    
+    const medicationDatabase = {
+      malaria: [
+        {
+          openfda: { brand_name: ["Coartem"], generic_name: ["Artemether/Lumefantrine"] },
+          dosage: "Adult: 4 tablets twice daily for 3 days",
+          type: "brand",
+          effectiveness: 95,
+          sideEffects: ["Nausea", "Dizziness", "Headache"]
+        },
+        {
+          openfda: { brand_name: ["Artemether"], generic_name: ["Artemether"] },
+          dosage: "As prescribed by healthcare provider",
+          type: "generic",
+          effectiveness: 90,
+          sideEffects: ["Injection site pain"]
+        }
+      ],
+      fever: [
+        {
+          openfda: { brand_name: ["Panadol"], generic_name: ["Paracetamol"] },
+          dosage: "Adult: 500mg-1g every 4-6 hours",
+          type: "brand",
+          effectiveness: 85,
+          sideEffects: ["Rare allergic reactions"]
+        },
+        {
+          openfda: { brand_name: ["Aspirin"], generic_name: ["Acetylsalicylic acid"] },
+          dosage: "Adult: 300-600mg every 4 hours",
+          type: "generic",
+          effectiveness: 80,
+          sideEffects: ["Stomach irritation", "Bleeding risk"]
+        }
+      ],
+      headache: [
+        {
+          openfda: { brand_name: ["Panadol"], generic_name: ["Paracetamol"] },
+          dosage: "Adult: 500mg-1g every 4-6 hours",
+          type: "brand",
+          effectiveness: 85,
+          sideEffects: ["Rare allergic reactions"]
+        },
+        {
+          openfda: { brand_name: ["Ibuprofen"], generic_name: ["Ibuprofen"] },
+          dosage: "Adult: 200-400mg every 4-6 hours",
+          type: "generic",
+          effectiveness: 88,
+          sideEffects: ["Stomach upset", "Dizziness"]
+        }
+      ]
+    };
+    
+    let medications = [];
+    
+    if (disease) {
+      const normalizedDisease = disease.toLowerCase().trim();
+      medications = medicationDatabase[normalizedDisease] || [];
+    } else if (symptoms) {
+      const symptomList = symptoms.toLowerCase().split(',').map(s => s.trim());
+      Object.keys(medicationDatabase).forEach(condition => {
+        if (symptomList.some(symptom => condition.includes(symptom))) {
+          medications = medications.concat(medicationDatabase[condition]);
+        }
+      });
+    } else {
+      medications = Object.values(medicationDatabase).flat();
+    }
+    
+    // Filter by type
+    if (type !== 'all') {
+      medications = medications.filter(med => med.type === type);
+    }
+    
+    // Sort medications
+    if (sort === 'effectiveness') {
+      medications.sort((a, b) => (b.effectiveness || 0) - (a.effectiveness || 0));
+    } else if (sort === 'name') {
+      medications.sort((a, b) => {
+        const nameA = a.openfda.brand_name[0] || a.openfda.generic_name[0];
+        const nameB = b.openfda.brand_name[0] || b.openfda.generic_name[0];
+        return nameA.localeCompare(nameB);
+      });
+    }
+    
+    const limitedMedications = medications.slice(0, parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: limitedMedications,
+      query: { disease, symptoms, type, limit: parseInt(limit), sort },
+      count: limitedMedications.length,
+      disclaimer: "This is demo data. Always consult a healthcare professional for proper medication advice."
+    });
+    
+  } catch (error) {
+    logger.error('Enhanced medication search error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Unable to search medications. Please try again later.'
+    });
+  }
+}));
+
+// Enhanced health check endpoint
+app.get('/health', (req, res) => {
+  const healthStatus = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'IremboCare+',
+    version: '1.3.0',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    environment: process.env.NODE_ENV || 'development'
+  };
+  
+  logger.info('Health check requested', healthStatus);
+  res.json(healthStatus);
 });
+
+// Readiness probe for load balancer
+app.get('/ready', (req, res) => {
+  res.json({
+    status: 'ready',
+    timestamp: new Date().toISOString(),
+    service: 'IremboCare+'
+  });
+});
+
+// Basic metrics endpoint
+app.get('/metrics', (req, res) => {
+  res.json({
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Only start server if this file is run directly (not imported for testing)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    logger.info('🏥 IremboCare+ server started successfully', {
+      port: PORT,
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString()
+    });
+    
+    console.log(`🏥 IremboCare+ server running on port ${PORT}`);
+    console.log(`📱 Access your app at: http://localhost:${PORT}`);
+    console.log(`🔐 Authentication endpoints ready`);
+    console.log(`🩺 Health services API ready`);
+    console.log(`🌤️  Weather health tips API ready`);
+    console.log(`📰 Health news API ready`);
+    console.log(`🔍 Enhanced search APIs ready`);
+  });
+}
+
+// Export the app for testing
+module.exports = app;
