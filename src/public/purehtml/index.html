@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IremboCare+ | Rwanda Health Info Finder 🏥</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+</head>
+<body>
+  <div class="container">
+    <div class="welcome">
+      <h1>IremboCare+</h1>
+      <div id="name-section">
+        <input id="username" placeholder="✨ Enter your name to get started" />
+        <button onclick="setName()">🚀 Start Journey</button>
+      </div>
+      <p class="welcome-note" id="welcome-note">
+        Welcome to IremboCare+! Instantly find nearby healthcare services, check medication information, and get first-aid tips tailored for Rwanda.
+      </p>
+    </div>
+  <section>
+    <h2>Find Nearby Health Services</h2>
+    <select id="location">
+      <option value="">Select your district</option>
+      <option value="Bugesera">Bugesera</option>
+      <option value="Burera">Burera</option>
+      <option value="Gakenke">Gakenke</option>
+      <option value="Gatsibo">Gatsibo</option>
+      <option value="Gicumbi">Gicumbi</option>
+      <option value="Gisagara">Gisagara</option>
+      <option value="Huye">Huye</option>
+      <option value="Kamonyi">Kamonyi</option>
+      <option value="Karongi">Karongi</option>
+      <option value="Kayonza">Kayonza</option>
+      <option value="Kicukiro">Kicukiro</option>
+      <option value="Kirehe">Kirehe</option>
+      <option value="Muhanga">Muhanga</option>
+      <option value="Musanze">Musanze</option>
+      <option value="Ngoma">Ngoma</option>
+      <option value="Ngororero">Ngororero</option>
+      <option value="Nyabihu">Nyabihu</option>
+      <option value="Nyagatare">Nyagatare</option>
+      <option value="Nyamagabe">Nyamagabe</option>
+      <option value="Nyamasheke">Nyamasheke</option>
+      <option value="Nyanza">Nyanza</option>
+      <option value="Nyarugenge">Nyarugenge</option>
+      <option value="Nyaruguru">Nyaruguru</option>
+      <option value="Rubavu">Rubavu</option>
+      <option value="Ruhango">Ruhango</option>
+      <option value="Rulindo">Rulindo</option>
+      <option value="Rusizi">Rusizi</option>
+      <option value="Rutsiro">Rutsiro</option>
+      <option value="Rwamagana">Rwamagana</option>
+      <option value="Gasabo">Gasabo</option>
+    </select>
+    <button onclick="findServices()">Search</button>
+    <ul id="services"></ul>
+  </section>
+  <section>
+    <h2>Check Medication by Disease</h2>
+    <input id="disease" placeholder="Enter disease name" />
+    <button onclick="findMedication()">Search</button>
+    <ul id="medications"></ul>
+  </section>
+  <section>
+    <h2>First-Aid Tips</h2>
+    <button onclick="getTips()">Show Tips</button>
+    <ul id="tips"></ul>
+  </section>
+  <section>
+    <h2>Ask the AI Doctor</h2>
+    <input id="ai-message" placeholder="Type your medical question..." />
+    <select id="ai-specialization">
+      <option value="general">General</option>
+      <option value="neurosurgery">Neurosurgery</option>
+      <option value="cardiology">Cardiology</option>
+      <!-- Add more specializations as needed -->
+    </select>
+    <button onclick="askAIDoctor()">Ask</button>
+    <div id="ai-response"></div>
+  </section>
+  
+  
+</body>
+</html>
+
+{
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.7"
+  }
+}

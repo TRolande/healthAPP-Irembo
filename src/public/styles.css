@@ -1,0 +1,325 @@
+/* 🎨 IremboCare+ Modern Healthcare Design */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  min-height: 100vh;
+  padding: 20px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 🏥 Main Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* 👋 Welcome Section */
+.welcome {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>') repeat;
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% { transform: translateX(-50px) translateY(-50px); }
+  100% { transform: translateX(50px) translateY(50px); }
+}
+
+.welcome h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+}
+
+.welcome h1::after {
+  content: '🏥';
+  display: inline-block;
+  margin-left: 15px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+#name-section {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-note {
+  font-size: 1.2rem;
+  opacity: 0.95;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* 📱 Form Sections */
+section {
+  padding: 40px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+section:last-child {
+  border-bottom: none;
+}
+
+section:hover {
+  background: linear-gradient(135deg, #f8f9ff, #fff8f9);
+  transform: translateY(-2px);
+}
+
+section h2 {
+  color: #667eea;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 🎯 Section Icons */
+section h2::before {
+  font-size: 1.5rem;
+}
+
+section:nth-child(2) h2::before { content: '🏥'; }
+section:nth-child(3) h2::before { content: '💊'; }
+section:nth-child(4) h2::before { content: '🆘'; }
+section:nth-child(5) h2::before { content: '🤖'; }
+
+/* 🎨 Form Controls */
+input, select {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: inherit;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* 🚀 Buttons */
+button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  margin: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+/* 📋 Results Lists */
+ul {
+  background: linear-gradient(135deg, #f8f9ff, #fff8f9);
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 20px;
+  list-style: none;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+}
+
+li {
+  background: white;
+  margin-bottom: 15px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+li:hover {
+  transform: translateX(5px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+li strong {
+  color: #667eea;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+li small {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* 🤖 AI Response */
+#ai-response {
+  background: linear-gradient(135deg, #f0f9ff, #ecfdf5);
+  border: 2px solid #bfdbfe;
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 60px;
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.1);
+}
+
+/* 📱 Loading Animation */
+.loading {
+  display: inline-block;
+  position: relative;
+  color: #667eea;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #667eea;
+  animation: loading 1.4s infinite;
+  margin-left: 8px;
+}
+
+@keyframes loading {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+
+/* 📲 Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .welcome {
+    padding: 40px 20px;
+  }
+  
+  .welcome h1 {
+    font-size: 2.5rem;
+  }
+  
+  section {
+    padding: 25px 20px;
+  }
+  
+  #name-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  input, select {
+    max-width: 100%;
+    margin-right: 0;
+  }
+}
+
+/* 🎉 Success/Error Messages */
+.success {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border-left-color: #10b981;
+  color: #065f46;
+}
+
+.error {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+
+.info {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-left-color: #3b82f6;
+  color: #1e40af;
+}

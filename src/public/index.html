@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IremboCare+ | Complete Health Assistant for Rwanda 🏥</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+  <style>
+    /* Additional styles for enhanced interactivity */
+    .feature-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 15px 0;
+      font-size: 1.5em;
+    }
+    
+    .feature-card p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    
+    .service-item {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      transition: all 0.3s ease;
+    }
+    
+    .service-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .service-item h4 {
+      color: #333;
+      margin: 0 0 10px 0;
+    }
+    
+    .service-item p {
+      color: #666;
+      margin: 5px 0;
+    }
+    
+    .telemedicine-badge {
+      background: #28a745;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .medication-item {
+      background: #e8f5e8;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .medication-item h4 {
+      color: #2e7d32;
+      margin: 0 0 8px 0;
+    }
+    
+    .medication-item p {
+      color: #388e3c;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .tip-item {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .tip-item h4 {
+      color: #e65100;
+      margin: 0 0 8px 0;
+    }
+    
+    .tip-item p {
+      color: #f57c00;
+      margin: 5px 0;
+    }
+    
+    .ai-chat {
+      background: #f3e5f5;
+      border: 2px solid #9c27b0;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .ai-response {
+      background: #e8f5e8;
+      border-left: 4px solid #4caf50;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .emergency-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff4757, #ff3838);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+      animation: pulse 2s infinite;
+      z-index: 1000;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .user-profile {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .user-profile h2 {
+      margin: 0 0 10px 0;
+    }
+    
+    .user-profile p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    
+    .tab-container {
+      display: flex;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 15px;
+      background: #f8f9fa;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .tab.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .tab:hover {
+      background: #5a6fd8;
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Emergency Button -->
+  <button class="emergency-btn" onclick="showEmergency()">🚨 EMERGENCY</button>
+
+  <div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome" id="welcomeSection">
+      <h1>🏥 IremboCare+</h1>
+      <p class="subtitle">Your Complete Health Assistant for Rwanda</p>
+      
+      <div id="name-section">
+        <input id="username" placeholder="✨ Enter your name to get started" />
+        <button onclick="setName()">🚀 Start Journey</button>
+      </div>
+      
+      <div id="user-profile" class="user-profile" style="display: none;">
+        <h2>Welcome, <span id="userNameDisplay"></span>! 👋</h2>
+        <p>Ready to explore Rwanda's healthcare services?</p>
+      </div>
+    </div>
+
+    <!-- Main Application Tabs -->
+    <div class="tab-container">
+      <button class="tab active" onclick="showTab('health-services')">🏥 Health Services</button>
+      <button class="tab" onclick="showTab('medication')">💊 Medication</button>
+      <button class="tab" onclick="showTab('first-aid')">🩺 First Aid</button>
+      <button class="tab" onclick="showTab('ai-doctor')">🤖 AI Doctor</button>
+    </div>
+
+    <!-- Health Services Tab -->
+    <div id="health-services" class="tab-content active">
+      <div class="feature-card">
+        <h3>📍 Find Nearby Health Services</h3>
+        <p>Select your district to discover healthcare facilities in your area</p>
+      </div>
+      
+      <select id="location" onchange="findServices()">
+      <option value="">Select your district</option>
+      <option value="Bugesera">Bugesera</option>
+      <option value="Burera">Burera</option>
+      <option value="Gakenke">Gakenke</option>
+      <option value="Gatsibo">Gatsibo</option>
+      <option value="Gicumbi">Gicumbi</option>
+      <option value="Gisagara">Gisagara</option>
+      <option value="Huye">Huye</option>
+      <option value="Kamonyi">Kamonyi</option>
+      <option value="Karongi">Karongi</option>
+      <option value="Kayonza">Kayonza</option>
+      <option value="Kicukiro">Kicukiro</option>
+      <option value="Kirehe">Kirehe</option>
+      <option value="Muhanga">Muhanga</option>
+      <option value="Musanze">Musanze</option>
+      <option value="Ngoma">Ngoma</option>
+      <option value="Ngororero">Ngororero</option>
+      <option value="Nyabihu">Nyabihu</option>
+      <option value="Nyagatare">Nyagatare</option>
+      <option value="Nyamagabe">Nyamagabe</option>
+      <option value="Nyamasheke">Nyamasheke</option>
+      <option value="Nyanza">Nyanza</option>
+      <option value="Nyarugenge">Nyarugenge</option>
+      <option value="Nyaruguru">Nyaruguru</option>
+      <option value="Rubavu">Rubavu</option>
+      <option value="Ruhango">Ruhango</option>
+      <option value="Rulindo">Rulindo</option>
+      <option value="Rusizi">Rusizi</option>
+      <option value="Rutsiro">Rutsiro</option>
+      <option value="Rwamagana">Rwamagana</option>
+      <option value="Gasabo">Gasabo</option>
+    </select>
+      
+      <div id="services"></div>
+      
+      <!-- Telemedicine Section -->
+      <div class="feature-card" onclick="showTelemedicineForm()">
+        <h3>📞 Request Telemedicine Consultation</h3>
+        <p>Get virtual medical consultation from healthcare professionals</p>
+      </div>
+      
+      <div id="telemedicine-form" style="display: none;">
+        <h3>📞 Telemedicine Request</h3>
+        <input type="text" id="patientName" placeholder="Your full name" />
+        <select id="telemedicineDistrict">
+          <option value="">Select district</option>
+          <option value="Bugesera">Bugesera</option>
+          <option value="Muhanga">Muhanga</option>
+          <option value="Burera">Burera</option>
+        </select>
+        <textarea id="symptoms" placeholder="Describe your symptoms..." rows="4"></textarea>
+        <select id="hospitalName">
+          <option value="">Select hospital (will populate based on district)</option>
+        </select>
+        <select id="contactMethod">
+          <option value="">Preferred contact method</option>
+          <option value="phone">Phone Call</option>
+          <option value="video">Video Call</option>
+          <option value="chat">Text Chat</option>
+        </select>
+        <select id="urgency">
+          <option value="normal">Normal Priority</option>
+          <option value="urgent">Urgent</option>
+        </select>
+        <button onclick="submitTelemedicineRequest()">Submit Request</button>
+      </div>
+    </div>
+
+    <!-- Medication Tab -->
+    <div id="medication" class="tab-content">
+      <div class="feature-card">
+        <h3>💊 Check Medication Information</h3>
+        <p>Search for medications and their usage for common diseases</p>
+      </div>
+      
+      <input id="disease" placeholder="Enter disease name (e.g., malaria, fever, headache)" />
+      <button onclick="findMedication()">🔍 Search Medications</button>
+      <div id="medications"></div>
+    </div>
+
+    <!-- First Aid Tab -->
+    <div id="first-aid" class="tab-content">
+      <div class="feature-card">
+        <h3>🩺 First-Aid Tips & Emergency Guidance</h3>
+        <p>Get immediate first-aid instructions for common emergencies</p>
+      </div>
+      
+      <select id="condition" onchange="getFirstAidTips()">
+        <option value="">Select condition for first-aid tips</option>
+        <option value="Burns">Burns</option>
+        <option value="Bleeding">Bleeding</option>
+        <option value="Choking">Choking</option>
+        <option value="Fracture">Fracture</option>
+        <option value="Heart Attack">Heart Attack</option>
+      </select>
+      
+      <button onclick="getTips()">📋 Show All First-Aid Tips</button>
+      <div id="tips"></div>
+    </div>
+
+    <!-- AI Doctor Tab -->
+    <div id="ai-doctor" class="tab-content">
+      <div class="feature-card">
+        <h3>🤖 AI Medical Assistant</h3>
+        <p>Ask medical questions and get AI-powered health guidance</p>
+      </div>
+      
+      <div class="ai-chat">
+        <textarea id="ai-message" placeholder="Type your medical question or describe your symptoms..." rows="4"></textarea>
+    <select id="ai-specialization">
+          <option value="general">General Medicine</option>
+          <option value="pediatrics">Pediatrics</option>
+      <option value="cardiology">Cardiology</option>
+          <option value="dermatology">Dermatology</option>
+          <option value="neurology">Neurology</option>
+          <option value="emergency">Emergency Medicine</option>
+    </select>
+        <button onclick="askAIDoctor()">🤖 Ask AI Doctor</button>
+    <div id="ai-response"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    // Enhanced JavaScript for full interactivity
+    
+    let currentUser = null;
+    
+    function setName() {
+      const name = document.getElementById('username').value.trim();
+      if (name) {
+        currentUser = name;
+        document.getElementById('userNameDisplay').textContent = name;
+        document.getElementById('name-section').style.display = 'none';
+        document.getElementById('user-profile').style.display = 'block';
+        
+        // Show welcome message
+        showNotification(`Welcome to IremboCare+, ${name}! 🎉`);
+      }
+    }
+    
+    function showTab(tabName) {
+      // Hide all tab contents
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // Remove active class from all tabs
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+    
+    async function findServices() {
+      const location = document.getElementById('location').value;
+      const servicesDiv = document.getElementById('services');
+      
+      if (!location) {
+        servicesDiv.innerHTML = '<p>Please select a district to find health services.</p>';
+        return;
+      }
+      
+      servicesDiv.innerHTML = '<div class="loading">Searching for health services...</div>';
+      
+      try {
+        const response = await fetch(`/api/health-services?location=${encodeURIComponent(location)}`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          let html = `<h3>🏥 Healthcare Services in ${location}</h3>`;
+          data.data.forEach(service => {
+            html += `
+              <div class="service-item">
+                <h4>${service.display_name}</h4>
+                <p><strong>Type:</strong> ${service.type}</p>
+                <p><strong>ID:</strong> ${service.id}</p>
+              </div>
+            `;
+          });
+          servicesDiv.innerHTML = html;
+        } else {
+          servicesDiv.innerHTML = `
+            <p>No healthcare services found for ${location}.</p>
+            <p>Available districts: ${data.availableDistricts ? data.availableDistricts.join(', ') : 'Bugesera, Muhanga, Burera'}</p>
+          `;
+        }
+      } catch (error) {
+        servicesDiv.innerHTML = '<p>Error loading health services. Please try again.</p>';
+        console.error('Error:', error);
+      }
+    }
+    
+    async function findMedication() {
+      const disease = document.getElementById('disease').value;
+      const medicationsDiv = document.getElementById('medications');
+      
+      if (!disease) {
+        medicationsDiv.innerHTML = '<p>Please enter a disease name to search for medications.</p>';
+        return;
+      }
+      
+      medicationsDiv.innerHTML = '<div class="loading">Searching for medications...</div>';
+      
+      try {
+        const response = await fetch(`/api/medication?disease=${encodeURIComponent(disease)}`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          let html = `<h3>💊 Medications for ${disease}</h3>`;
+          data.data.forEach(med => {
+            const brandName = med.openfda?.brand_name?.[0] || 'Generic';
+            const genericName = med.openfda?.generic_name?.[0] || 'Not specified';
+            const dosage = med.dosage || 'Consult healthcare provider';
+            
+            html += `
+              <div class="medication-item">
+                <h4>${brandName}</h4>
+                <p><strong>Generic Name:</strong> ${genericName}</p>
+                <p><strong>Dosage:</strong> ${dosage}</p>
+              </div>
+            `;
+          });
+          medicationsDiv.innerHTML = html;
+        } else {
+          medicationsDiv.innerHTML = `<p>No medications found for "${disease}". Try searching for: malaria, fever, headache</p>`;
+        }
+      } catch (error) {
+        medicationsDiv.innerHTML = '<p>Error loading medication information. Please try again.</p>';
+        console.error('Error:', error);
+      }
+    }
+    
+    async function getFirstAidTips() {
+      const condition = document.getElementById('condition').value;
+      const tipsDiv = document.getElementById('tips');
+      
+      if (!condition) {
+        tipsDiv.innerHTML = '<p>Please select a condition for first-aid tips.</p>';
+        return;
+      }
+      
+      tipsDiv.innerHTML = '<div class="loading">Loading first-aid tips...</div>';
+      
+      try {
+        const response = await fetch(`/api/first-aid?condition=${encodeURIComponent(condition)}`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          let html = `<h3>🩺 First-Aid for ${condition}</h3>`;
+          data.data.forEach(tip => {
+            html += `
+              <div class="tip-item">
+                <h4>${tip.condition}</h4>
+                <p><strong>Tip:</strong> ${tip.tip}</p>
+                <p><strong>Severity:</strong> ${tip.severity}</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                  ${tip.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+              </div>
+            `;
+          });
+          tipsDiv.innerHTML = html;
+        } else {
+          tipsDiv.innerHTML = `<p>No first-aid tips found for "${condition}".</p>`;
+        }
+      } catch (error) {
+        tipsDiv.innerHTML = '<p>Error loading first-aid tips. Please try again.</p>';
+        console.error('Error:', error);
+      }
+    }
+    
+    async function getTips() {
+      const tipsDiv = document.getElementById('tips');
+      tipsDiv.innerHTML = '<div class="loading">Loading all first-aid tips...</div>';
+      
+      try {
+        const response = await fetch('/api/first-aid');
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          let html = '<h3>🩺 All First-Aid Tips</h3>';
+          data.data.forEach(tip => {
+            html += `
+              <div class="tip-item">
+                <h4>${tip.condition}</h4>
+                <p><strong>Tip:</strong> ${tip.tip}</p>
+                <p><strong>Severity:</strong> ${tip.severity}</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                  ${tip.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+              </div>
+            `;
+          });
+          tipsDiv.innerHTML = html;
+        } else {
+          tipsDiv.innerHTML = '<p>No first-aid tips available.</p>';
+        }
+      } catch (error) {
+        tipsDiv.innerHTML = '<p>Error loading first-aid tips. Please try again.</p>';
+        console.error('Error:', error);
+      }
+    }
+    
+    async function askAIDoctor() {
+      const message = document.getElementById('ai-message').value;
+      const specialization = document.getElementById('ai-specialization').value;
+      const responseDiv = document.getElementById('ai-response');
+      
+      if (!message) {
+        responseDiv.innerHTML = '<p>Please enter your medical question.</p>';
+        return;
+      }
+      
+      responseDiv.innerHTML = '<div class="loading">AI Doctor is analyzing your question...</div>';
+      
+      try {
+        const response = await fetch('/api/ai-doctor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: message,
+            specialization: specialization,
+            language: 'en'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          responseDiv.innerHTML = `
+            <div class="ai-response">
+              <h4>🤖 AI Doctor Response:</h4>
+              <p>${data.data.response || data.data.message || 'AI response received'}</p>
+              <small>Specialization: ${specialization}</small>
+            </div>
+          `;
+        } else {
+          responseDiv.innerHTML = `<p>Error: ${data.message || 'Unable to get AI response'}</p>`;
+        }
+      } catch (error) {
+        responseDiv.innerHTML = '<p>Error connecting to AI Doctor. Please try again later.</p>';
+        console.error('Error:', error);
+      }
+    }
+    
+    function showTelemedicineForm() {
+      const form = document.getElementById('telemedicine-form');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    async function submitTelemedicineRequest() {
+      const patientName = document.getElementById('patientName').value;
+      const district = document.getElementById('telemedicineDistrict').value;
+      const symptoms = document.getElementById('symptoms').value;
+      const hospitalName = document.getElementById('hospitalName').value;
+      const contactMethod = document.getElementById('contactMethod').value;
+      const urgency = document.getElementById('urgency').value;
+      
+      if (!patientName || !district || !symptoms || !hospitalName || !contactMethod) {
+        showNotification('Please fill in all required fields for telemedicine request.', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/telemedicine-request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            patientName,
+            district,
+            symptoms,
+            hospitalName,
+            contactMethod,
+            urgency
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showNotification('Telemedicine request submitted successfully! You will be contacted soon.', 'success');
+          document.getElementById('telemedicine-form').style.display = 'none';
+      } else {
+          showNotification(`Error: ${data.message}`, 'error');
+        }
+      } catch (error) {
+        showNotification('Error submitting telemedicine request. Please try again.', 'error');
+        console.error('Error:', error);
+      }
+    }
+    
+    function showEmergency() {
+      const emergencyNumbers = [
+        { name: 'Emergency Services', number: '112' },
+        { name: 'Police', number: '112' },
+        { name: 'Fire Department', number: '112' },
+        { name: 'Ambulance', number: '912' }
+      ];
+      
+      let html = '<div style="background: #ffebee; padding: 20px; border-radius: 10px; margin: 20px 0;">';
+      html += '<h3>🚨 Emergency Contacts</h3>';
+      emergencyNumbers.forEach(contact => {
+        html += `<p><strong>${contact.name}:</strong> <a href="tel:${contact.number}">${contact.number}</a></p>`;
+      });
+      html += '<p><strong>⚠️ Important:</strong> In case of emergency, call these numbers immediately!</p>';
+      html += '</div>';
+      
+      alert(html.replace(/<[^>]*>/g, ''));
+    }
+    
+    function showNotification(message, type = 'info') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'error' ? '#ff4757' : type === 'success' ? '#28a745' : '#667eea'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 1001;
+        animation: slideDown 0.3s ease;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(0); opacity: 1; }
+        to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      showNotification('Welcome to IremboCare+! Your complete health assistant for Rwanda. 🏥');
+    });
+  </script>
+</body>
+</html>
