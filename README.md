@@ -405,6 +405,7 @@ The demo video demonstrates:
 5. AI doctor consultation
 6. Load balancer functionality
 7. Mobile responsiveness
+my link to the demo video https://www.loom.com/share/1c154520a2934e27bd651ada252c3203?sid=6cddce0b-1e38-4c46-ae24-e666d84555c7 i used loom for my video
 
 ## 🤝 Contributing
 
